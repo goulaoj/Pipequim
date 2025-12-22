@@ -6,6 +6,10 @@ class Statistics(Enum):
     FERMION = "fermion"
 
 class ParticleType:
+    
+    statistics: Statistics
+    spin: float
+    
     def __init__(self, statistics: Statistics, spin: float):
         self.statistics = statistics
         self.spin = spin
@@ -21,6 +25,7 @@ class ParticleType:
         2s + 1 = #m
         """
         return int(2 * self.spin + 1)
+    
     def permutation_sign(self, permutation_parity: int) -> int:
         """
         Retorna o signal da permutação no determinante de Slater

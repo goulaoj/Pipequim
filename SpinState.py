@@ -3,10 +3,16 @@ class SpinState:
     Spin state of a single particle or coupled system.
     """
 
+    spin: float
+    m: float
+    
     def __init__(self, spin: float, m: float):
         self.spin = spin
         self.m = m
 
+    def spin(self) -> float:
+        return self.spin
+    
     def projection(self) -> float:
         return self.m
 

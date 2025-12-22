@@ -4,6 +4,9 @@ class SpatialState:
     """
     Spatial eigenstate of a single particle.
     """
+    
+    n: int
+    oscillator: HarmonicOscillator
 
     def __init__(self, n: int, oscillator: HarmonicOscillator):
         self.n = n
