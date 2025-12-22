@@ -8,7 +8,7 @@ from SystemState import SystemState
 
 Oscillator = HarmonicOscillator()
 
-x = np.linspace(-3, 3, 300)
+x = np.linspace(-5, 5, 300)
 X1, X2 = np.meshgrid(x, x)
 
 boson = ParticleType(Statistics.BOSON, 0)
@@ -18,13 +18,13 @@ bosonic_state = SystemState(boson)
 fermionic_triplet_state = SystemState(fermion)
 fermionic_singlet_state = SystemState(fermion)
 
-bosonic_state.add_particle(SpatialState(0, Oscillator),SpinState(0, 0))
+bosonic_state.add_particle(SpatialState(1, Oscillator),SpinState(0, 0.))
 fermionic_triplet_state.add_particle(SpatialState(0, Oscillator),SpinState(0.5, 0.5))
 fermionic_singlet_state.add_particle(SpatialState(0, Oscillator),SpinState(0.5, 0.5))
 
-bosonic_state.add_particle(SpatialState(0, Oscillator),SpinState(0, 0))
-fermionic_triplet_state.add_particle(SpatialState(0, Oscillator),SpinState(0.5, 0.5))
-fermionic_singlet_state.add_particle(SpatialState(0, Oscillator),SpinState(0.5, -0.5))
+bosonic_state.add_particle(SpatialState(3, Oscillator),SpinState(0, 0.))
+fermionic_triplet_state.add_particle(SpatialState(2, Oscillator),SpinState(0.5, 0.5))
+fermionic_singlet_state.add_particle(SpatialState(2, Oscillator),SpinState(0.5, -0.5))
 
 
 rho_b = bosonic_state.joint_density(X1, X2)

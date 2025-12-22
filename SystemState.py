@@ -91,8 +91,7 @@ class SystemState:
         for N = 2 particles, tracing over spin.
         """
         N = self.number_of_particles()
-        if N != 2:
-            raise NotImplementedError("Joint density implemented only for N = 2.")
+
 
         sym_state = self.symmetrized_state()
         norm = sym_state["normalization"]
@@ -106,13 +105,18 @@ class SystemState:
             # Spatial wavefunctions
             psi_a_x1 = sp_a.wavefunction(x1)
             psi_b_x2 = sp_b.wavefunction(x2)
-
-            psi_term = psi_a_x1 * psi_b_x2
-
-            # Spin overlap: ⟨χ|χ⟩ = 1 if same spin, else 0
-            spin_factor = 1.0 if spin_a.m == spin_b.m else 0.0
-
-            psi_total += sign * spin_factor * psi_term
+            psi_a_x2 = sp_a.wavefunction(x2)
+            psi_b_x1 = sp_b.wavefunction(x1)
+            # para boson
+            psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 + psi_a_x2 * psi_b_x1)
+            # para fermion
+            if (spin_a.m.is_integer()==False):
+                if spin_a.m == spin_b.m:
+                 psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 - psi_a_x2 * psi_b_x1)
+        # If spins are different (Singlet), the spatial part is typically symmetric
+                else:
+                 psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 + psi_a_x2 * psi_b_x1)
+            #psi_total += sign * spin_factor * psi_term
 
         psi_total *= norm
         return np.abs(psi_total) ** 2
