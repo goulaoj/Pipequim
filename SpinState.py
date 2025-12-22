@@ -9,9 +9,6 @@ class SpinState:
     def __init__(self, spin: float, m: float):
         self.spin = spin
         self.m = m
-
-    def getSpin(self) -> float:
-        return self.spin
     
     def projection(self) -> float:
         return self.m
