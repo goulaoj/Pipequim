@@ -1,3 +1,5 @@
+import HarmonicOscillator
+
 class SpatialState:
     """
     Spatial eigenstate of a single particle.
