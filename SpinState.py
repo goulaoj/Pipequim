@@ -10,7 +10,7 @@ class SpinState:
         self.spin = spin
         self.m = m
 
-    def spin(self) -> float:
+    def getSpin(self) -> float:
         return self.spin
     
     def projection(self) -> float:
