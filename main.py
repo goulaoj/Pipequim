@@ -4,7 +4,7 @@ from HarmonicOscillator import HarmonicOscillator
 from ParticleType import ParticleType, Statistics
 from SpatialState import SpatialState
 from TotalSpinState import TotalSpinState
-from SystemState2 import SystemState
+from SystemState import SystemState
 from InfinitePotentialWell import InfinitePotentialWell
 
 Oscillator = HarmonicOscillator()
