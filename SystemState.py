@@ -1,6 +1,7 @@
 import itertools
-import SpatialState
-import SpinState
+from ParticleType import ParticleType, Statistics
+from SpatialState import SpatialState
+from TotalSpinState import TotalSpinState
 import numpy as np
 
 class SystemState:
@@ -8,28 +9,36 @@ class SystemState:
     Many-body quantum state of identical particles.
     """
 
-    def __init__(self, particle_type):
+    def __init__(self, particle_type, SpinState: TotalSpinState):
         self.particle_type = particle_type
         self.spatial_states = []
-        self.spin_states = []
+        self.total_spin_state = SpinState
 
-    def add_particle(self, spatial_state: SpatialState, spin_state: SpinState):
+        
+    def add_particle(self, spatial_state: SpatialState):
         self.spatial_states.append(spatial_state)
-        self.spin_states.append(spin_state)
 
     def number_of_particles(self) -> int:
         return len(self.spatial_states)
 
     def total_energy(self) -> float:
         return sum(state.energy() for state in self.spatial_states)
-
-    def single_particle_state(self, index):
+    
+    def required_spatial_symmetry(self):
         """
-        Returns the (SpatialState, SpinState) of particle index.
+        Returns +1 (symmetric) or -1 (antisymmetric)
         """
-        return self.spatial_states[index], self.spin_states[index]
+        if self.particle_type.is_boson():
+            return +1
 
-    def symmetrized_state(self):
+
+        if self.total_spin_state.is_triplet():
+            return -1  
+        else:
+            return +1 
+
+
+    def symmetrized_spatial_state(self):
         """
         General symmetrized / antisymmetrized state for N particles.
 
@@ -43,24 +52,22 @@ class SystemState:
         norm = self.particle_type.symmetrization_normalization(N)
 
         # Single-particle states
-        single_states = list(zip(self.spatial_states, self.spin_states))
-
+        symmetry = self.required_spatial_symmetry()
         symmetrized_terms = []
 
         for perm in itertools.permutations(range(N)):
             # Permutation parity
             parity = self._permutation_parity(perm)
 
-            sign = self.particle_type.permutation_sign(parity)
+            sign = 1
+            if symmetry == -1:
+                sign = (-1) ** parity
 
-            permuted_state = tuple(single_states[i] for i in perm)
+            permuted = [self.spatial_states[i] for i in perm]
 
-            symmetrized_terms.append((sign, permuted_state))
+            symmetrized_terms.append((sign, permuted))
 
-        return {
-            "normalization": norm,
-            "terms": symmetrized_terms
-        }
+        return norm, symmetrized_terms
 
     def _permutation_parity(self, perm):
         """
@@ -85,87 +92,41 @@ class SystemState:
 
         return parity % 2
     
-    def joint_density(self, x1, x2):
-        """
-        Computes the joint spatial density ρ(x1, x2)
-        for N = 2 particles, tracing over spin.
-        """
+    def wavefunction(self, positions: np.ndarray) -> np.ndarray:
+
+        positions = np.asarray(positions) 
+        
         N = self.number_of_particles()
-
-
-        sym_state = self.symmetrized_state()
-        norm = sym_state["normalization"]
-        terms = sym_state["terms"]
-
-        psi_total = 0.0
-
-        for sign, term in terms:
-            (sp_a, spin_a), (sp_b, spin_b) = term
-
-            # Spatial wavefunctions
-            psi_a_x1 = sp_a.wavefunction(x1)
-            psi_b_x2 = sp_b.wavefunction(x2)
-            psi_a_x2 = sp_a.wavefunction(x2)
-            psi_b_x1 = sp_b.wavefunction(x1)
-            # para boson
-            psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 + psi_a_x2 * psi_b_x1)
-            # para fermion
-            if (spin_a.m.is_integer()==False):
-                if spin_a.m == spin_b.m:
-                 psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 - psi_a_x2 * psi_b_x1)
-        # If spins are different (Singlet), the spatial part is typically symmetric
-                else:
-                 psi_total = (1/np.sqrt(2)) * (psi_a_x1 * psi_b_x2 + psi_a_x2 * psi_b_x1)
-            #psi_total += sign * spin_factor * psi_term
-
-        psi_total *= norm
-        return np.abs(psi_total) ** 2
-
-    def slater_wavefunction(self, x_values):
-        """
-        Computes the Slater determinant wavefunction for fermions.
-
-        Parameters
-        ----------
-        x_values : list or array
-            Positions [x1, x2, ..., xN]
-        """
-        if not self.particle_type.is_fermion():
-            raise ValueError("Slater determinant only valid for fermions.")
-
-        N = self.number_of_particles()
-        if len(x_values) != N:
+        if positions.shape[0] != N:
             raise ValueError("Number of positions must match number of particles.")
 
-        # Build Slater matrix
-        slater_matrix = np.zeros((N, N), dtype=complex)
+        norm, sym_terms = self.symmetrized_spatial_state()
+        total_wavefunction = 0.0
 
-        for i in range(N):
-            for j in range(N):
-                sp = self.spatial_states[i]
-                spin = self.spin_states[i]
+        for sign, states in sym_terms:
+            
+            term_wavefunction = 1.0
+            
+            for i in range(N):
+                term_wavefunction *= states[i].wavefunction(positions[i])
+            total_wavefunction += sign * term_wavefunction
 
-                # Spin part: orthonormal basis
-                spin_factor = 1.0  # assuming orthonormal spin states
+        return norm * total_wavefunction
+    
+    def density (self, xs):
+        
+        psi= self.wavefunction(xs)
+        return np.abs(psi)**2
+    
+    def density_grid(self, X1, X2):
+        
+        rho = np.zeros_like(X1)
 
-                slater_matrix[i, j] = (
-                    sp.wavefunction(x_values[j]) * spin_factor
-                )
+        for i in range(X1.shape[0]):
+            
+            for j in range(X1.shape[1]):
+                
+                rho[i, j] = self.density([X1[i, j], X2[i, j]])
 
-        # Determinant
-        psi = np.linalg.det(slater_matrix)
-        psi /= np.sqrt(np.math.factorial(N))
-        return psi
-
-    def one_body_density_slater(self, x):
-        """
-        One-body density for a fermionic Slater state.
-        """
-        if not self.particle_type.is_fermion():
-            raise ValueError("Only for fermions.")
-
-        rho = 0.0
-        for sp in self.spatial_states:
-            rho += np.abs(sp.wavefunction(x)) ** 2
         return rho
     
