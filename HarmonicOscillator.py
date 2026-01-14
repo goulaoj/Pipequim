@@ -4,9 +4,7 @@ from scipy.special import hermite
 
 class HarmonicOscillator:
     
-    def __init__(self):
-        pass
-
+    
     def energy(self, n: int) -> float:
         """
         Consideramos o resto das constantes 1
