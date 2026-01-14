@@ -1,22 +1,20 @@
-import HarmonicOscillator
+from HarmonicOscillator import HarmonicOscillator
+from InfinitePotentialWell import InfinitePotentialWell
 
 class SpatialState:
     """
     Spatial eigenstate of a single particle.
     """
-    
-    n: int
-    oscillator: HarmonicOscillator
 
-    def __init__(self, n: int, oscillator: HarmonicOscillator):
+    def __init__(self, n: int, potential):
         self.n = n
-        self.oscillator = oscillator
+        self.potential = potential
         
     def energy(self) -> float:
-        return self.oscillator.energy(self.n)
+        return self.potential.energy(self.n)
 
     def wavefunction(self, x):
-        return self.oscillator.wavefunction(self.n, x)
+        return self.potential.wavefunction(self.n, x)
 
     def density(self, x):
         psi = self.wavefunction(x)
