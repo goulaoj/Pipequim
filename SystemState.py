@@ -24,6 +24,8 @@ class SystemState:
     def total_energy(self) -> float:
         return sum(state.energy() for state in self.spatial_states)
     
+    
+    # --------- Symmetrization / Antisymmetrization -------
     def required_spatial_symmetry(self):
         """
         Returns +1 (symmetric) or -1 (antisymmetric)
@@ -130,6 +132,9 @@ class SystemState:
 
         return rho
     
+    
+    # --------- Correlation Functions -------
+    
     def one_particle_density(self, rho, x):
         
         dx =  x[1] - x[0]
@@ -154,6 +159,7 @@ class SystemState:
         g2 = rho / (rho1_x1_2d * rho1_x2_2d + 1e-12) 
         return g2
     
+    # --------- Expectation Values -------
     def expectation(self, operator, X1, X2):
 
         rho = self.density_grid(X1, X2)
@@ -166,3 +172,29 @@ class SystemState:
         expectation_value = np.sum(op_vals * rho) * dx * dy
         return expectation_value
 
+    # --------- No symetrization / antisymmetrization -------
+    def unsym_wavefunction(self, positions: np.ndarray) -> np.ndarray:
+        
+        N = self.number_of_particles()
+
+        psi = 1.0
+        for i in range(N):
+            psi *= self.spatial_states[i].wavefunction(positions[i])
+        return psi
+
+    def unsym_density (self, xs):
+        
+        psi= self.unsym_wavefunction(xs)
+        return np.abs(psi)**2
+    
+    def unsym_density_grid(self, X1, X2):
+        
+        rho = np.zeros_like(X1)
+
+        for i in range(X1.shape[0]):
+            
+            for j in range(X1.shape[1]):
+                
+                rho[i, j] = self.unsym_density([X1[i, j], X2[i, j]])
+
+        return rho
