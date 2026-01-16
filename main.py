@@ -41,9 +41,8 @@ rho_b = bosonic_state.density_grid(X1, X2)
 rho_ft = fermionic_triplet_state.density_grid(X1, X2)
 rho_fs = fermionic_singlet_state.density_grid(X1, X2)
 
-unsym_rho_b = bosonic_state.unsym_density_grid(X1, X2)
-unsym_rho_ft = fermionic_triplet_state.unsym_density_grid(X1, X2)
-unsym_rho_fs = fermionic_singlet_state.unsym_density_grid(X1, X2)
+unsym_rho = bosonic_state.unsym_density_grid(X1, X2)
+unsym_g2 = bosonic_state.unsym_correlation_function_grid(X1, X2)
 
 g2_b  = bosonic_state.correlation_function_grid(X1, X2)
 g2_ft = fermionic_triplet_state.correlation_function_grid(X1, X2)
@@ -97,10 +96,9 @@ def plot_correlation_g2(g2, x, title):
 # plot_density(rho_ft, x, "Fermões (triplete): antibunching")
 # plot_density(rho_fs, x, "Fermões (singlete): permitido x1=x2")
 
-# Não simetrizado
-plot_density(unsym_rho_b, x, "Bosões: densidade conjunta ρ(x1,x2)")
-plot_density(unsym_rho_ft, x, "Fermões (triplete): antibunching")
-plot_density(unsym_rho_fs, x, "Fermões (singlete): permitido x1=x2")
+# Não simetrizado (tipo de particula indiferente)
+plot_density(unsym_rho, x, "Partículas Distinguíveis: ρ(x1,x2)")
+plot_correlation_g2(unsym_g2, x, "Partículas Distinguíveis: g²(x1,x2)")
 
 # 3D
 # plot_density_3D(X1, X2, rho_b, "Bosões: densidade conjunta ρ(x1,x2)")

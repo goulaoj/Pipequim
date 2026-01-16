@@ -149,8 +149,8 @@ class SystemState:
         rho1_x2 = self.one_particle_density(rho, X2[:,0])
         
 
-        rho1_x1 = rho1_x1 / (np.max(rho1_x1) + 1e-12)
-        rho1_x2 = rho1_x2 / (np.max(rho1_x2) +1e-12)
+        rho1_x1 = rho1_x1 / (np.trapezoid(rho1_x1, x=X1[0,:]) + 1e-12)
+        rho1_x2 = rho1_x2 / (np.trapezoid(rho1_x1, x=X2[:,0]) +1e-12)
         
 
         rho1_x1_2d = rho1_x1[:, np.newaxis]
@@ -198,3 +198,23 @@ class SystemState:
                 rho[i, j] = self.unsym_density([X1[i, j], X2[i, j]])
 
         return rho
+    
+    
+    def unsym_correlation_function_grid(self, X1, X2):
+
+        rho = self.unsym_density_grid(X1, X2)
+        
+        rho1_x1 = self.one_particle_density(rho, X1[0,:])
+        rho1_x2 = self.one_particle_density(rho, X2[:,0])
+        
+
+        rho1_x1 = rho1_x1 / (np.trapezoid(rho1_x1, x=X1[0,:]) + 1e-12)
+        rho1_x2 = rho1_x2 / (np.trapezoid(rho1_x1, x=X2[:,0]) +1e-12)
+        
+
+        rho1_x1_2d = rho1_x1[:, np.newaxis]
+        rho1_x2_2d = rho1_x2[np.newaxis, :]
+        
+        g2 = rho / (rho1_x1_2d * rho1_x2_2d + 1e-12) 
+        return g2
+    
