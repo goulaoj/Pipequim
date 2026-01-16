@@ -130,3 +130,39 @@ class SystemState:
 
         return rho
     
+    def one_particle_density(self, rho, x):
+        
+        dx =  x[1] - x[0]
+        return np.trapezoid(rho, dx=dx, axis=1)
+    
+    
+    def correlation_function_grid(self, X1, X2):
+
+        rho = self.density_grid(X1, X2)
+        
+        rho1_x1 = self.one_particle_density(rho, X1[0,:])
+        rho1_x2 = self.one_particle_density(rho, X2[:,0])
+        
+
+        rho1_x1 = rho1_x1 / (np.max(rho1_x1) + 1e-12)
+        rho1_x2 = rho1_x2 / (np.max(rho1_x2) +1e-12)
+        
+
+        rho1_x1_2d = rho1_x1[:, np.newaxis]
+        rho1_x2_2d = rho1_x2[np.newaxis, :]
+        
+        g2 = rho / (rho1_x1_2d * rho1_x2_2d + 1e-12) 
+        return g2
+    
+    def expectation(self, operator, X1, X2):
+
+        rho = self.density_grid(X1, X2)
+        
+        dx = X1[0,1] - X1[0,0] 
+        dy = X2[1,0] - X2[0,0]
+        
+        op_vals = operator(X1, X2)
+        
+        expectation_value = np.sum(op_vals * rho) * dx * dy
+        return expectation_value
+
