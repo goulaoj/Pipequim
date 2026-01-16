@@ -27,12 +27,13 @@ bosonic_state = SystemState(boson, boson_spinState)
 fermionic_triplet_state = SystemState(fermion, fermion_triplet_spinState)
 fermionic_singlet_state = SystemState(fermion, fermion_singlet_spinState)
 
+# Escolha de nível e potencial
 bosonic_state.add_particle(SpatialState(0, Oscillator))
 fermionic_triplet_state.add_particle(SpatialState(0, Oscillator))
 fermionic_singlet_state.add_particle(SpatialState(0, Oscillator))
 
 bosonic_state.add_particle(SpatialState(0, Oscillator))
-fermionic_triplet_state.add_particle(SpatialState(0, Oscillator))
+fermionic_triplet_state.add_particle(SpatialState(1, Oscillator))
 fermionic_singlet_state.add_particle(SpatialState(0, Oscillator))
 
 
@@ -92,50 +93,50 @@ def plot_correlation_g2(g2, x, title):
     plt.show()
     
 # Simetrizado   
-# plot_density(rho_b, x, "Bosões: densidade conjunta ρ(x1,x2)")
-# plot_density(rho_ft, x, "Fermões (triplete): antibunching")
-# plot_density(rho_fs, x, "Fermões (singlete): permitido x1=x2")
+plot_density(rho_b, x, "Bosões: densidade conjunta ρ(x1,x2)")
+plot_density(rho_ft, x, "Fermiões (triplete): densidade conjunta ρ(x1,x2)")
+plot_density(rho_fs, x, "Fermiões (singlete): densidade conjunta ρ(x1,x2)")
 
 # Não simetrizado (tipo de particula indiferente)
 plot_density(unsym_rho, x, "Partículas Distinguíveis: ρ(x1,x2)")
 plot_correlation_g2(unsym_g2, x, "Partículas Distinguíveis: g²(x1,x2)")
 
 # 3D
-# plot_density_3D(X1, X2, rho_b, "Bosões: densidade conjunta ρ(x1,x2)")
-# plot_density_3D(X1, X2, rho_ft, "Fermões (triplete): antibunching")
-# plot_density_3D(X1, X2, rho_fs, "Fermões (singlete): permitido x1=x2")
+plot_density_3D(X1, X2, rho_b, "Bosões: densidade conjunta ρ(x1,x2)")
+plot_density_3D(X1, X2, rho_ft, "Fermiões (triplete): densidade conjunta ρ(x1,x2)")
+plot_density_3D(X1, X2, rho_fs, "Fermiões (singlete): densidade conjunta ρ(x1,x2)")
 
 # Função de correlação g2
-# plot_correlation_g2(g2_b, x, "Bosões: função de correlação g²(x1,x2)")
-# plot_correlation_g2(g2_ft, x, "Fermões (triplete): função de correlação g²(x1,x2)")
-# plot_correlation_g2(g2_fs, x, "Fermões (singlete): função de correlação g²(x1,x2)")
+plot_correlation_g2(g2_b, x, "Bosões: função de correlação g²(x1,x2)")
+plot_correlation_g2(g2_ft, x, "Fermiões (triplete): função de correlação g²(x1,x2)")
+plot_correlation_g2(g2_fs, x, "Fermiões (singlete): função de correlação g²(x1,x2)")
 
 
 # --------- Cálculo de valores esperados ---------
 
 # # <x1^2>
-# def op_x1_squared(X1, X2): 
-#     return X1**2
+def op_x1_squared(X1, X2): 
+    return X1**2
 
 # # <x1 x2>
-# def op_x1_x2(X1, X2):
-#     return X1 * X2
+def op_x1_x2(X1, X2):
+    return X1 * X2
 
 # # <(x1 - x2)^2>
-# def op_dx_squared(X1, X2):
-#     return (X1 - X2)**2 
+def op_dx_squared(X1, X2):
+    return (X1 - X2)**2 
 
-# print("Bosões:")
-# print("⟨x1^2⟩ =", bosonic_state.expectation(op_x1_squared, X1, X2))
-# print("⟨x1 x2⟩ =", bosonic_state.expectation(op_x1_x2, X1, X2))
-# print("⟨(x1-x2)^2⟩ =", bosonic_state.expectation(op_dx_squared, X1, X2))
+print("Bosões:")
+print("⟨x1^2⟩ =", bosonic_state.expectation(op_x1_squared, X1, X2))
+print("⟨x1 x2⟩ =", bosonic_state.expectation(op_x1_x2, X1, X2))
+print("⟨(x1-x2)^2⟩ =", bosonic_state.expectation(op_dx_squared, X1, X2))
 
-# print("\nFermiões triplete:")
-# print("⟨x1^2⟩ =", fermionic_triplet_state.expectation(op_x1_squared, X1, X2))
-# print("⟨x1 x2⟩ =", fermionic_triplet_state.expectation(op_x1_x2, X1, X2))
-# print("⟨(x1-x2)^2⟩ =", fermionic_triplet_state.expectation(op_dx_squared, X1, X2))
+print("\nFermiões triplete:")
+print("⟨x1^2⟩ =", fermionic_triplet_state.expectation(op_x1_squared, X1, X2))
+print("⟨x1 x2⟩ =", fermionic_triplet_state.expectation(op_x1_x2, X1, X2))
+print("⟨(x1-x2)^2⟩ =", fermionic_triplet_state.expectation(op_dx_squared, X1, X2))
 
-# print("\nFermiões singlete:")
-# print("⟨x1^2⟩ =", fermionic_singlet_state.expectation(op_x1_squared, X1, X2))
-# print("⟨x1 x2⟩ =", fermionic_singlet_state.expectation(op_x1_x2, X1, X2))
-# print("⟨(x1-x2)^2⟩ =", fermionic_singlet_state.expectation(op_dx_squared, X1, X2))
+print("\nFermiões singlete:")
+print("⟨x1^2⟩ =", fermionic_singlet_state.expectation(op_x1_squared, X1, X2))
+print("⟨x1 x2⟩ =", fermionic_singlet_state.expectation(op_x1_x2, X1, X2))
+print("⟨(x1-x2)^2⟩ =", fermionic_singlet_state.expectation(op_dx_squared, X1, X2))
